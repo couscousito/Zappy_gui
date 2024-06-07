@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "GameMap.h"
 #include "GameFramework/GameModeBase.h"
 #include "ZappyGameModeBase.generated.h"
 
@@ -13,5 +14,9 @@ UCLASS()
 class ZAPPY_API AZappyGameModeBase : public AGameModeBase
 {
 	GENERATED_BODY()
-	
+public:
+	virtual void BeginPlay() override;
+private:
+	UPROPERTY();
+	AGameMap *GameMap;
 };
