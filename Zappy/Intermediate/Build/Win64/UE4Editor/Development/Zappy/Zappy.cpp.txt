@@ -1,2 +1,0 @@
-C:\Users\Lucas\Documents\Unreal Projects\Zappy_gui\Zappy\Intermediate\Build\Win64\UE4Editor\Development\Zappy\Definitions.Zappy.h
-C:\Users\Lucas\Documents\Unreal Projects\Zappy_gui\Zappy\Source\Zappy\Zappy.h
