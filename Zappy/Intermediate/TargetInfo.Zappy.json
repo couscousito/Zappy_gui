@@ -1,0 +1,14 @@
+{
+	"Targets": [
+		{
+			"Name": "Zappy",
+			"Path": "C:\\Users\\Lucas\\Documents\\Unreal Projects\\zappy_gui\\Zappy\\Source\\Zappy.Target.cs",
+			"Type": "Game"
+		},
+		{
+			"Name": "ZappyEditor",
+			"Path": "C:\\Users\\Lucas\\Documents\\Unreal Projects\\zappy_gui\\Zappy\\Source\\ZappyEditor.Target.cs",
+			"Type": "Editor"
+		}
+	]
+}

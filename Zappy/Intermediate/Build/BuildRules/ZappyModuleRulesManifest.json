@@ -1,0 +1,8 @@
+{
+	"SourceFiles": [
+		"C:\\Users\\Lucas\\Documents\\Unreal Projects\\Zappy_gui\\Zappy\\Source\\Zappy\\Zappy.Build.cs",
+		"C:\\Users\\Lucas\\Documents\\Unreal Projects\\Zappy_gui\\Zappy\\Source\\Zappy.Target.cs",
+		"C:\\Users\\Lucas\\Documents\\Unreal Projects\\Zappy_gui\\Zappy\\Source\\ZappyEditor.Target.cs"
+	],
+	"EngineVersion": "4.27.2"
+}
