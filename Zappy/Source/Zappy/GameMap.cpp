@@ -23,6 +23,9 @@ void AGameMap::GenerateMap() const
 			// FActorSpawnParameters SpawnParams;
 
 			ATileComponent *Tile = GetWorld()->SpawnActor<ATileComponent>(ATileComponent::StaticClass(), Location, Rotation);
+			Tile->SetTileLocation(Location);
+			FVector ObjectLocation(10.0f, 10.0f, 0.0f);
+			Tile->PlaceObject(TEXT("/Game/StarterContent/Architecture/Pillar_50x500.Pillar_50x500"), ObjectLocation, Rotation);
 		}
 	}
 }

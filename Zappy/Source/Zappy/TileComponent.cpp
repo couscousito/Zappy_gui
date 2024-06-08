@@ -19,6 +19,33 @@ ATileComponent::ATileComponent()
 	}
 }
 
+void ATileComponent::PlaceObject(const TCHAR* PathToObject, FVector Location, FRotator Rotation)
+{
+	UStaticMesh* MeshToPlace = LoadObject<UStaticMesh>(nullptr, PathToObject);
+	if (!MeshToPlace)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("PathToObject: Object path is invalid."));
+		return;
+	}
+	const FVector WorldLocation = TileLocation + Location;
+	UStaticMeshComponent* NewMeshComponent = NewObject<UStaticMeshComponent>(this);
+	if (NewMeshComponent)
+	{
+		NewMeshComponent->SetStaticMesh(MeshToPlace);
+		NewMeshComponent->SetWorldLocation(WorldLocation);
+		NewMeshComponent->SetWorldRotation(Rotation);
+		NewMeshComponent->RegisterComponent();
+		NewMeshComponent->AttachToComponent(RootComponent, FAttachmentTransformRules::KeepWorldTransform);
+	}
+}
+
+void ATileComponent::SetTileLocation(const FVector Location)
+{
+	TileLocation = Location;
+}
+
+
+
 // Called when the game starts or when spawned
 void ATileComponent::BeginPlay()
 {

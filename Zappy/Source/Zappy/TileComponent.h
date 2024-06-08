@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
+#include "Components/StaticMeshComponent.h"
 #include "TileComponent.generated.h"
 
 UCLASS()
@@ -22,5 +23,9 @@ protected:
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
+	void PlaceObject(const TCHAR* PathToObject, FVector Location, FRotator Rotation);
+	void SetTileLocation(const FVector Location);
 	UStaticMeshComponent* TileMesh;
+private:
+	FVector TileLocation;
 };
