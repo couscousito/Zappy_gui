@@ -3,6 +3,8 @@
 
 #include "GameMap.h"
 
+#include "Trace/Detail/Protocols/Protocol0.h"
+
 // Sets default values
 AGameMap::AGameMap(const int32 SizeXParam, const int32 SizeYParam): SizeX(10), SizeY(10)
 {
@@ -10,7 +12,7 @@ AGameMap::AGameMap(const int32 SizeXParam, const int32 SizeYParam): SizeX(10), S
 	PrimaryActorTick.bCanEverTick = true;
 }
 
-void AGameMap::GenerateMap() const
+void AGameMap::GenerateMap()
 {
 	UE_LOG(LogTemp, Warning, TEXT("Enter in map generator with size %d | %d"), SizeX, SizeY);
 
@@ -21,11 +23,60 @@ void AGameMap::GenerateMap() const
 			FVector Location(x * 100.0f, y * 100.0f, 0.0f);
 			FRotator Rotation = FRotator::ZeroRotator	;
 			// FActorSpawnParameters SpawnParams;
-
 			ATileComponent *Tile = GetWorld()->SpawnActor<ATileComponent>(ATileComponent::StaticClass(), Location, Rotation);
-			Tile->SetTileLocation(Location);
+			FTileInfo TileInfo;
+			TileInfo.TileID = FString::Printf(TEXT("%d%d"), x, y);
+			TileInfo.TileComponent = Tile;
+			TileMap.Add(TileInfo);
+			
 			FVector ObjectLocation(10.0f, 10.0f, 0.0f);
-			Tile->PlaceObject(TEXT("/Game/StarterContent/Architecture/Pillar_50x500.Pillar_50x500"), ObjectLocation, Rotation);
+			Tile->PlaceObject(TEXT("/Game/Imported/TileObject/phiras.phiras"), ObjectLocation, Rotation);
+		}
+	}
+}
+
+TArray<FString> AGameMap::SplitProtocolString(const FString& InputString, const FString& Delimiter, const FString &ProtocolID)
+{
+	TArray<FString> ProtocolArray;
+	FString remainingString = InputString;
+	int32 pos;
+
+	while ((pos = remainingString.Find(Delimiter)) != -1)
+	{
+		FString Substring = remainingString.Left(pos).Replace(*ProtocolID, TEXT(""), ESearchCase::IgnoreCase);
+		ProtocolArray.Add(Substring);
+		remainingString = remainingString.Mid(pos + Delimiter.Len());
+	}
+	return ProtocolArray;
+}
+
+
+void AGameMap::SetObjectOnMapByProtocol(FString &ProtocolString)
+{
+	TArray<FString> ProtocolArray = SplitProtocolString(ProtocolString, TEXT("\n"), TEXT("BCT "));
+	FString TileId;
+	
+	for (FString Protocol: ProtocolArray)
+	{
+		TArray<FString> ProtocolArgs;
+		TMap<EObjectType, int32> ObjectsNumber;
+		Protocol.ParseIntoArray(ProtocolArray, TEXT(" "), true);
+		
+		TileId = ProtocolArgs[0] + ProtocolArgs[1];
+		ObjectsNumber.Add(EObjectType::Food, FCString::Atoi(*ProtocolArgs[2]));
+		ObjectsNumber.Add(EObjectType::Linemate, FCString::Atoi(*ProtocolArgs[3]));
+		ObjectsNumber.Add(EObjectType::Deraumere, FCString::Atoi(*ProtocolArgs[4]));
+		ObjectsNumber.Add(EObjectType::Sibur, FCString::Atoi(*ProtocolArgs[5]));
+		ObjectsNumber.Add(EObjectType::Mendiane, FCString::Atoi(*ProtocolArgs[6]));
+		ObjectsNumber.Add(EObjectType::Phiras, FCString::Atoi(*ProtocolArgs[7]));
+		ObjectsNumber.Add(EObjectType::Thystame, FCString::Atoi(*ProtocolArgs[8]));
+
+		for (FTileInfo TileInfo: TileMap)
+		{
+			if (TileInfo.TileID == TileId)
+			{
+				TileInfo.TileComponent->PlaceObjectList(ObjectsNumber);
+			}
 		}
 	}
 }

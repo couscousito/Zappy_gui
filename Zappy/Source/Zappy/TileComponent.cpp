@@ -39,12 +39,16 @@ void ATileComponent::PlaceObject(const TCHAR* PathToObject, FVector Location, FR
 	}
 }
 
+void ATileComponent::PlaceObjectList(TMap<EObjectType, int32> ObjectList)
+{
+	
+}
+
+
 void ATileComponent::SetTileLocation(const FVector Location)
 {
 	TileLocation = Location;
 }
-
-
 
 // Called when the game starts or when spawned
 void ATileComponent::BeginPlay()
