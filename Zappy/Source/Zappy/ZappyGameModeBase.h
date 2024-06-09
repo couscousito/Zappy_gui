@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameMap.h"
+#include "ProtocolManager.h"
 #include "GameFramework/GameModeBase.h"
 #include "ZappyGameModeBase.generated.h"
 
@@ -18,5 +19,5 @@ public:
 	virtual void BeginPlay() override;
 private:
 	UPROPERTY();
-	AGameMap *GameMap;
+	AProtocolManager* ProtocolManager;
 };

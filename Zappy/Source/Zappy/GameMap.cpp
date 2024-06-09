@@ -48,38 +48,32 @@ TArray<FString> AGameMap::SplitProtocolString(const FString& InputString, const 
 	return ProtocolArray;
 }
 
-void AGameMap::SetObjectOnMapByProtocol(FString &ProtocolString)
+void AGameMap::SetObjectOnMapByProtocol(const FString &ProtocolString)
 {
-	TArray<FString> ProtocolArray = SplitProtocolString(ProtocolString, TEXT("\n"), TEXT("BCT "));
-	FString TileId;
+	// TArray<FString> ProtocolArray = SplitProtocolString(ProtocolString, TEXT("\n"), TEXT("BCT "));
+	TArray<FString> ProtocolArgs;
+	TMap<EObjectType, int32> ObjectsNumber;
 	
-	for (FString Protocol: ProtocolArray)
+	ProtocolString.ParseIntoArray(ProtocolArgs, TEXT(" "), true);
+	if (ProtocolArgs.Num() != 10)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("protocol String : %s"), *Protocol);
-		TArray<FString> ProtocolArgs;
-		TMap<EObjectType, int32> ObjectsNumber;
-		Protocol.ParseIntoArray(ProtocolArgs, TEXT(" "), true);
-		if (ProtocolArgs.Num() != 9)
+		UE_LOG(LogTemp, Warning, TEXT("Error: Bad protocol string %s"), *ProtocolString);
+		return;
+	}
+	
+	const FString TileId = ProtocolArgs[1] + ProtocolArgs[2];
+	ObjectsNumber.Add(EObjectType::Food, FCString::Atoi(*ProtocolArgs[3]));
+	ObjectsNumber.Add(EObjectType::Linemate, FCString::Atoi(*ProtocolArgs[4]));
+	ObjectsNumber.Add(EObjectType::Deraumere, FCString::Atoi(*ProtocolArgs[5]));
+	ObjectsNumber.Add(EObjectType::Sibur, FCString::Atoi(*ProtocolArgs[6]));
+	ObjectsNumber.Add(EObjectType::Mendiane, FCString::Atoi(*ProtocolArgs[7]));
+	ObjectsNumber.Add(EObjectType::Phiras, FCString::Atoi(*ProtocolArgs[8]));
+	ObjectsNumber.Add(EObjectType::Thystame, FCString::Atoi(*ProtocolArgs[9]));
+	for (FTileInfo TileInfo: TileMap)
+	{
+		if (TileInfo.TileID == TileId)
 		{
-			UE_LOG(LogTemp, Warning, TEXT("Error: Bad protocol string %s"), *Protocol);
-			return;
-		}
-		
-		TileId = ProtocolArgs[0] + ProtocolArgs[1];
-		ObjectsNumber.Add(EObjectType::Food, FCString::Atoi(*ProtocolArgs[2]));
-		ObjectsNumber.Add(EObjectType::Linemate, FCString::Atoi(*ProtocolArgs[3]));
-		ObjectsNumber.Add(EObjectType::Deraumere, FCString::Atoi(*ProtocolArgs[4]));
-		ObjectsNumber.Add(EObjectType::Sibur, FCString::Atoi(*ProtocolArgs[5]));
-		ObjectsNumber.Add(EObjectType::Mendiane, FCString::Atoi(*ProtocolArgs[6]));
-		ObjectsNumber.Add(EObjectType::Phiras, FCString::Atoi(*ProtocolArgs[7]));
-		ObjectsNumber.Add(EObjectType::Thystame, FCString::Atoi(*ProtocolArgs[8]));
-		UE_LOG(LogTemp, Warning, TEXT("Tile ID : %s"), *TileId);
-		for (FTileInfo TileInfo: TileMap)
-		{
-			if (TileInfo.TileID == TileId)
-			{
-				TileInfo.TileComponent->PlaceObjectList(ObjectsNumber);
-			}
+			TileInfo.TileComponent->PlaceObjectList(ObjectsNumber);
 		}
 	}
 }

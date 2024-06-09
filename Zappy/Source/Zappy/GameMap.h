@@ -31,7 +31,7 @@ public:
 	AGameMap() : SizeX(0), SizeY(0){};
 	void InitMap(const int32 SizeXParam, const int32 SizeYParam);
 	void GenerateMap();
-	void SetObjectOnMapByProtocol(FString &ProtocolString);
+	void SetObjectOnMapByProtocol(const FString &ProtocolString);
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
