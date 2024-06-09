@@ -8,8 +8,7 @@ ATileComponent::ATileComponent()
 {
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
-	PrimaryActorTick.bCanEverTick = true;
-	PrimaryActorTick.bCanEverTick = true;
+	PathManager = NewObject<UObjectPathManager>();
 	TileMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("TileMesh"));
 	RootComponent = TileMesh;
 	static ConstructorHelpers::FObjectFinder<UStaticMesh> TileMeshAsset(TEXT("/Game/StarterContent/Architecture/Floor_400x400.Floor_400x400"));
@@ -19,14 +18,21 @@ ATileComponent::ATileComponent()
 	}
 }
 
-void ATileComponent::PlaceObject(const TCHAR* PathToObject, FVector Location, FRotator Rotation)
+void ATileComponent::PlaceObject(const FString PathToObject, FVector Location, FRotator Rotation)
 {
-	UStaticMesh* MeshToPlace = LoadObject<UStaticMesh>(nullptr, PathToObject);
+	UStaticMesh* MeshToPlace = LoadObject<UStaticMesh>(nullptr, *PathToObject);
+	;
 	if (!MeshToPlace)
 	{
 		UE_LOG(LogTemp, Warning, TEXT("PathToObject: Object path is invalid."));
 		return;
 	}
+	
+	float TargetXY = 20.0f;
+	FVector mesh = MeshToPlace->GetBounds().BoxExtent * 2;
+	float MaxXY = FMath::Max(mesh.X, mesh.Y);
+	const FVector ScaleFactor = FVector(TargetXY / MaxXY);
+	
 	const FVector WorldLocation = TileLocation + Location;
 	UStaticMeshComponent* NewMeshComponent = NewObject<UStaticMeshComponent>(this);
 	if (NewMeshComponent)
@@ -34,6 +40,7 @@ void ATileComponent::PlaceObject(const TCHAR* PathToObject, FVector Location, FR
 		NewMeshComponent->SetStaticMesh(MeshToPlace);
 		NewMeshComponent->SetWorldLocation(WorldLocation);
 		NewMeshComponent->SetWorldRotation(Rotation);
+		NewMeshComponent->SetWorldScale3D(ScaleFactor);
 		NewMeshComponent->RegisterComponent();
 		NewMeshComponent->AttachToComponent(RootComponent, FAttachmentTransformRules::KeepWorldTransform);
 	}
@@ -41,7 +48,15 @@ void ATileComponent::PlaceObject(const TCHAR* PathToObject, FVector Location, FR
 
 void ATileComponent::PlaceObjectList(TMap<EObjectType, int32> ObjectList)
 {
-	
+	for (auto El: ObjectList)
+	{
+		for (int32 i = 0; i < El.Value; i++)
+		{
+			FVector Location(FMath::RandRange(0.0f, 400.0f), FMath::RandRange(0.0f, 400.0f), 0.0f);
+			FRotator Rotation = FRotator::ZeroRotator;
+			PlaceObject(PathManager->GetAssetPath(El.Key), Location, Rotation);
+		}
+	}
 }
 
 

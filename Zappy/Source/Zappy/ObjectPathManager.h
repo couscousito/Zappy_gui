@@ -5,7 +5,19 @@
 #include "CoreMinimal.h"
 #include "ObjectPathManager.generated.h"
 
-enum class EObjectType : uint8;
+UENUM(BlueprintType)
+enum class EObjectType : uint8
+{
+	Food,
+	Linemate,
+	Deraumere,
+	Sibur,
+	Mendiane,
+	Phiras,
+	Thystame,
+	Undefine,
+};
+
 
 UCLASS()
 class ZAPPY_API UObjectPathManager : public UObject

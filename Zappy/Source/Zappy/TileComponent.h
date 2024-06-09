@@ -6,20 +6,8 @@
 #include "GameFramework/Actor.h"
 #include "Components/StaticMeshComponent.h"
 #include "Containers/Map.h"
+#include "ObjectPathManager.h"
 #include "TileComponent.generated.h"
-
-UENUM(BlueprintType)
-enum class EObjectType : uint8
-{
-	Food,
-	Linemate,
-	Deraumere,
-	Sibur,
-	Mendiane,
-	Phiras,
-	Thystame,
-	Undefine,
-};
 
 UCLASS()
 class ZAPPY_API ATileComponent : public AActor
@@ -37,10 +25,12 @@ protected:
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
-	void PlaceObject(const TCHAR* PathToObject, FVector Location, FRotator Rotation);
+	void PlaceObject(const FString PathToObject, FVector Location, FRotator Rotation);
 	void PlaceObjectList(TMap<EObjectType, int32> ObjectList);
 	void SetTileLocation(const FVector Location);
 	UStaticMeshComponent* TileMesh;
 private:
 	FVector TileLocation;
+	UPROPERTY()
+	UObjectPathManager* PathManager;
 };

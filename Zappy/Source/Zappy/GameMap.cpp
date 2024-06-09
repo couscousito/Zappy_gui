@@ -20,17 +20,15 @@ void AGameMap::GenerateMap()
 	{
 		for (int32 y = 0; y < SizeY; y++)
 		{
-			FVector Location(x * 100.0f, y * 100.0f, 0.0f);
+			FVector Location(x * 420.0f, y * 420.0f, 0.0f);
 			FRotator Rotation = FRotator::ZeroRotator	;
 			// FActorSpawnParameters SpawnParams;
 			ATileComponent *Tile = GetWorld()->SpawnActor<ATileComponent>(ATileComponent::StaticClass(), Location, Rotation);
 			FTileInfo TileInfo;
 			TileInfo.TileID = FString::Printf(TEXT("%d%d"), x, y);
 			TileInfo.TileComponent = Tile;
+			Tile->SetTileLocation(Location);
 			TileMap.Add(TileInfo);
-			
-			FVector ObjectLocation(10.0f, 10.0f, 0.0f);
-			Tile->PlaceObject(TEXT("/Game/Imported/TileObject/phiras.phiras"), ObjectLocation, Rotation);
 		}
 	}
 }
@@ -50,7 +48,6 @@ TArray<FString> AGameMap::SplitProtocolString(const FString& InputString, const 
 	return ProtocolArray;
 }
 
-
 void AGameMap::SetObjectOnMapByProtocol(FString &ProtocolString)
 {
 	TArray<FString> ProtocolArray = SplitProtocolString(ProtocolString, TEXT("\n"), TEXT("BCT "));
@@ -58,9 +55,15 @@ void AGameMap::SetObjectOnMapByProtocol(FString &ProtocolString)
 	
 	for (FString Protocol: ProtocolArray)
 	{
+		UE_LOG(LogTemp, Warning, TEXT("protocol String : %s"), *Protocol);
 		TArray<FString> ProtocolArgs;
 		TMap<EObjectType, int32> ObjectsNumber;
-		Protocol.ParseIntoArray(ProtocolArray, TEXT(" "), true);
+		Protocol.ParseIntoArray(ProtocolArgs, TEXT(" "), true);
+		if (ProtocolArgs.Num() != 9)
+		{
+			UE_LOG(LogTemp, Warning, TEXT("Error: Bad protocol string %s"), *Protocol);
+			return;
+		}
 		
 		TileId = ProtocolArgs[0] + ProtocolArgs[1];
 		ObjectsNumber.Add(EObjectType::Food, FCString::Atoi(*ProtocolArgs[2]));
@@ -70,7 +73,7 @@ void AGameMap::SetObjectOnMapByProtocol(FString &ProtocolString)
 		ObjectsNumber.Add(EObjectType::Mendiane, FCString::Atoi(*ProtocolArgs[6]));
 		ObjectsNumber.Add(EObjectType::Phiras, FCString::Atoi(*ProtocolArgs[7]));
 		ObjectsNumber.Add(EObjectType::Thystame, FCString::Atoi(*ProtocolArgs[8]));
-
+		UE_LOG(LogTemp, Warning, TEXT("Tile ID : %s"), *TileId);
 		for (FTileInfo TileInfo: TileMap)
 		{
 			if (TileInfo.TileID == TileId)
