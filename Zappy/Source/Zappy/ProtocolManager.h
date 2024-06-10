@@ -40,4 +40,5 @@ private:
 	void InitCommandMap();
 	void LaunchMsz(const FString& Command);
 	void LaunchBct(const FString& Command);
+	void LaunchEnw(const FString& Command);
 };

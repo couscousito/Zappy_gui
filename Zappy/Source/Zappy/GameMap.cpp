@@ -78,6 +78,18 @@ void AGameMap::SetObjectOnMapByProtocol(const FString &ProtocolString)
 	}
 }
 
+void AGameMap::SetEggOnMap(const TArray<FString> &ProtocolArray)
+{
+	const FString TileId = ProtocolArray[3] + ProtocolArray[4];
+	for (FTileInfo TileInfo: TileMap)
+	{
+		if (TileInfo.TileID == TileId)
+		{
+			TileInfo.TileComponent->PlaceEgg(FCString::Atoi(*ProtocolArray[1]), FCString::Atoi(*ProtocolArray[1]), FCString::Atoi(*ProtocolArray[3]), FCString::Atoi(*ProtocolArray[4]));
+		}
+	}
+}
+
 void AGameMap::InitMap(const int32 SizeXParam, const int32 SizeYParam)
 {
 	SizeX = SizeXParam;

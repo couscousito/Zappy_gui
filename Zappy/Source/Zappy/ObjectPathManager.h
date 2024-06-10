@@ -15,6 +15,7 @@ enum class EObjectType : uint8
 	Mendiane,
 	Phiras,
 	Thystame,
+	Egg,
 	Undefine,
 };
 

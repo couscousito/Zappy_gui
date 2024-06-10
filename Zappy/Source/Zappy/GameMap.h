@@ -32,6 +32,8 @@ public:
 	void InitMap(const int32 SizeXParam, const int32 SizeYParam);
 	void GenerateMap();
 	void SetObjectOnMapByProtocol(const FString &ProtocolString);
+	void SetEggOnMap(const TArray<FString> &ProtocolArray);
+	void caca();
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;

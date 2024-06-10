@@ -14,6 +14,7 @@ UObjectPathManager::UObjectPathManager()
 	ObjectPaths.Add(EObjectType::Mendiane, TEXT("/Game/Imported/TileObject/Mendiane.Mendiane"));
 	ObjectPaths.Add(EObjectType::Phiras, TEXT("/Game/Imported/TileObject/Phiras.Phiras"));
 	ObjectPaths.Add(EObjectType::Thystame, TEXT("/Game/Imported/TileObject/Thystame.Thystame"));
+	ObjectPaths.Add(EObjectType::Egg, TEXT("/Game/Imported/TileObject/egg.egg"));
 }
 
 FString UObjectPathManager::GetAssetPath(EObjectType ObjectType) const

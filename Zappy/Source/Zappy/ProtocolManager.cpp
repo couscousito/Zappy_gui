@@ -15,6 +15,7 @@ void AProtocolManager::InitCommandMap()
 {
 	CommandMap.Add(TEXT("msz"), [this](const FString &Params) { LaunchMsz(Params); });
 	CommandMap.Add(TEXT("bct"), [this](const FString &Params) { LaunchBct(Params); });
+	CommandMap.Add(TEXT("enw"), [this](const FString &Params) { LaunchEnw(Params); });
 }
 
 void AProtocolManager::InitGameClass()
@@ -87,5 +88,9 @@ void AProtocolManager::LaunchBct(const FString& Command)
 	GameMap->SetObjectOnMapByProtocol(Command);
 }
 
-
-
+void AProtocolManager::LaunchEnw(const FString& Command)
+{
+	TArray<FString> SeparateCommand;
+	Command.ParseIntoArray(SeparateCommand, TEXT(" "), true);
+	GameMap->SetEggOnMap(SeparateCommand);
+}
