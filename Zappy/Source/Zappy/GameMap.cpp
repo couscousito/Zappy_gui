@@ -90,6 +90,17 @@ void AGameMap::SetEggOnMap(const TArray<FString> &ProtocolArray)
 	}
 }
 
+void AGameMap::DestroyEggById(const int32 EggId)
+{
+	for (FTileInfo TileInfo: TileMap)
+	{
+		if (TileInfo.TileComponent->IsEggInArray(EggId))
+		{
+			TileInfo.TileComponent->DestroyEgg(EggId);
+		}
+	}
+}
+
 void AGameMap::InitMap(const int32 SizeXParam, const int32 SizeYParam)
 {
 	SizeX = SizeXParam;

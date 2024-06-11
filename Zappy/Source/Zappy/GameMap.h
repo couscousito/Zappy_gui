@@ -33,7 +33,7 @@ public:
 	void GenerateMap();
 	void SetObjectOnMapByProtocol(const FString &ProtocolString);
 	void SetEggOnMap(const TArray<FString> &ProtocolArray);
-	void caca();
+	void DestroyEggById(const int32 EggId);
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;

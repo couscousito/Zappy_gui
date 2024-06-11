@@ -16,6 +16,9 @@ void AProtocolManager::InitCommandMap()
 	CommandMap.Add(TEXT("msz"), [this](const FString &Params) { LaunchMsz(Params); });
 	CommandMap.Add(TEXT("bct"), [this](const FString &Params) { LaunchBct(Params); });
 	CommandMap.Add(TEXT("enw"), [this](const FString &Params) { LaunchEnw(Params); });
+	CommandMap.Add(TEXT("edi"), [this](const FString &Params) { LaunchEdi(Params); });
+	CommandMap.Add(TEXT("tna"), [this](const FString &Params) { LaunchTna(Params); });
+	CommandMap.Add(TEXT("sgt"), [this](const FString &Params) { LaunchSgt(Params); });
 }
 
 void AProtocolManager::InitGameClass()
@@ -94,3 +97,34 @@ void AProtocolManager::LaunchEnw(const FString& Command)
 	Command.ParseIntoArray(SeparateCommand, TEXT(" "), true);
 	GameMap->SetEggOnMap(SeparateCommand);
 }
+
+void AProtocolManager::LaunchEdi(const FString& Command)
+{
+	TArray<FString> SeparateCommand;
+	Command.ParseIntoArray(SeparateCommand, TEXT(" "), true);
+	GameMap->DestroyEggById(FCString::Atoi(*SeparateCommand[1]));
+}
+
+void AProtocolManager::LaunchTna(const FString& Command)
+{
+	TArray<FString> SeparateCommand;
+	Command.ParseIntoArray(SeparateCommand, TEXT(" "), true);
+
+	TeamNameArray.Add(SeparateCommand[1]);
+}
+
+void AProtocolManager::LaunchSgt(const FString& Command)
+{
+	TArray<FString> SeparateCommand;
+	Command.ParseIntoArray(SeparateCommand, TEXT(" "), true);
+
+	TimeUnit = FCString::Atoi(*SeparateCommand[1]);
+}
+
+
+void AProtocolManager::LaunchPnw(const FString& Command)
+{
+	TArray<FString> SeparateCommand;
+	Command.ParseIntoArray(SeparateCommand, TEXT(" "), true);
+}
+

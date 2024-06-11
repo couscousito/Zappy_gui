@@ -96,6 +96,32 @@ void ATileComponent::PlaceEgg(int32 EggId, int32 PlayerId, int32 PosX, int32 Pos
 	PlaceObject(PathManager->GetAssetPath(EObjectType::Egg), Location, Rotation);
 }
 
+TArray<FEggInfo> ATileComponent::GetTileEggInfos()
+{
+	return EggOnTile;
+}
+
+void ATileComponent::DestroyEgg(const int32 EggId)
+{
+	if (EggOnTile.Num() > 0)
+	{
+		int32 NumRemoved = EggOnTile.RemoveAll([EggId](const FEggInfo& EggInfo) {
+			return EggInfo.EggId == EggId;
+		});
+	}
+}
+
+bool ATileComponent::IsEggInArray(int32 EggIdToFind)
+{
+	// Utilisation de FindByPredicate pour rechercher un œuf avec le EggId spécifié
+	const FEggInfo* FoundEgg = EggOnTile.FindByPredicate([EggIdToFind](const FEggInfo& Egg) {
+		return Egg.EggId == EggIdToFind;
+	});
+
+	// Retourne true si un œuf est trouvé, sinon retourne false
+	return FoundEgg != nullptr;
+}
+
 
 void ATileComponent::SetTileLocation(const FVector Location)
 {

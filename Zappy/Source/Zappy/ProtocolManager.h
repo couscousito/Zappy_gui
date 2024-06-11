@@ -33,7 +33,12 @@ private:
 	UNetworkManagement *NetworkManagement;
 	UPROPERTY()
 	AGameMap *GameMap;
-
+	
+	/* Game Property*/
+private:
+	TArray<FString> TeamNameArray;
+	int32 TimeUnit;
+	
 	/* -- Server Command -- */
 private:
 	TMap<FString, TFunction<void(const FString&)>> CommandMap;
@@ -41,4 +46,8 @@ private:
 	void LaunchMsz(const FString& Command);
 	void LaunchBct(const FString& Command);
 	void LaunchEnw(const FString& Command);
+	void LaunchEdi(const FString& Command);
+	void LaunchTna(const FString& Command);
+	void LaunchPnw(const FString& Command);
+	void LaunchSgt(const FString& Command);
 };

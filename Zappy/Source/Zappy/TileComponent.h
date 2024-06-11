@@ -41,8 +41,14 @@ public:
 	virtual void Tick(float DeltaTime) override;
 	void PlaceObject(const FString PathToObject, FVector Location, FRotator Rotation);
 	void PlaceObjectList(TMap<EObjectType, int32> ObjectList);
-	void PlaceEgg(int32 EggId, int32 PlayerId, int32 posX, int32 posY);
 	void SetTileLocation(const FVector Location);
+	
+	// Egg Operation
+	void PlaceEgg(int32 EggId, int32 PlayerId, int32 posX, int32 posY);
+	void DestroyEgg(const int32 EggId);
+	bool IsEggInArray(int32 EggIdToFind);
+	TArray<FEggInfo> GetTileEggInfos();
+	
 	UStaticMeshComponent* TileMesh;
 private:
 	bool AreTMapIdentical(const TMap<EObjectType, int32>& Map1, const TMap<EObjectType, int32>& Map2);
