@@ -22,3 +22,4 @@ FString UObjectPathManager::GetAssetPath(EObjectType ObjectType) const
 	const FString* Path = ObjectPaths.Find(ObjectType);
 	return Path ? *Path : FString();
 }
+

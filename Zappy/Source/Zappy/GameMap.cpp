@@ -3,6 +3,7 @@
 
 #include "GameMap.h"
 
+#include "GameCharacter.h"
 #include "Trace/Detail/Protocols/Protocol0.h"
 
 // Sets default values
@@ -10,6 +11,27 @@ AGameMap::AGameMap(const int32 SizeXParam, const int32 SizeYParam): SizeX(10), S
 {
 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
+}
+
+template<typename T>
+bool AreArraysEqual(const TArray<T>& Array1, const TArray<T>& Array2)
+{
+	// Check if the sizes are the same
+	if (Array1.Num() != Array2.Num())
+	{
+		return false;
+	}
+
+	// Compare each element
+	for (int32 i = 0; i < Array1.Num(); i++)
+	{
+		if (Array1[i] != Array2[i])
+		{
+			return false;
+		}
+	}
+
+	return true;
 }
 
 void AGameMap::GenerateMap()
@@ -25,7 +47,7 @@ void AGameMap::GenerateMap()
 			// FActorSpawnParameters SpawnParams;
 			ATileComponent *Tile = GetWorld()->SpawnActor<ATileComponent>(ATileComponent::StaticClass(), Location, Rotation);
 			FTileInfo TileInfo;
-			TileInfo.TileID = FString::Printf(TEXT("%d%d"), x, y);
+			TileInfo.TileID = FCString::Atoi(*FString::Printf(TEXT("%d%d"), x, y));
 			TileInfo.TileComponent = Tile;
 			Tile->SetTileLocation(Location);
 			TileMap.Add(TileInfo);
@@ -33,54 +55,43 @@ void AGameMap::GenerateMap()
 	}
 }
 
-TArray<FString> AGameMap::SplitProtocolString(const FString& InputString, const FString& Delimiter, const FString &ProtocolID)
+FTileInfo *AGameMap::GetTileById(const int32 TileId)
 {
-	TArray<FString> ProtocolArray;
-	FString remainingString = InputString;
-	int32 pos;
-
-	while ((pos = remainingString.Find(Delimiter)) != -1)
+	FTileInfo* FoundTile = TileMap.FindByPredicate([TileId](const FTileInfo& Tile)
 	{
-		FString Substring = remainingString.Left(pos).Replace(*ProtocolID, TEXT(""), ESearchCase::IgnoreCase);
-		ProtocolArray.Add(Substring);
-		remainingString = remainingString.Mid(pos + Delimiter.Len());
-	}
-	return ProtocolArray;
+		return Tile.TileID == TileId;
+	});
+	return FoundTile;
 }
 
-void AGameMap::SetObjectOnMapByProtocol(const FString &ProtocolString)
+
+void AGameMap::SetObjectOnMapByProtocol(TArray<FString> &ProtocolArray)
 {
-	// TArray<FString> ProtocolArray = SplitProtocolString(ProtocolString, TEXT("\n"), TEXT("BCT "));
-	TArray<FString> ProtocolArgs;
-	TMap<EObjectType, int32> ObjectsNumber;
-	
-	ProtocolString.ParseIntoArray(ProtocolArgs, TEXT(" "), true);
-	if (ProtocolArgs.Num() != 10)
+	if (ProtocolArray.Num() != 10)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("Error: Bad protocol string %s"), *ProtocolString);
+		UE_LOG(LogTemp, Warning, TEXT("Error: Bad protocol string"));
 		return;
 	}
+	const int32 TileId = FCString::Atoi(*(ProtocolArray[1] + ProtocolArray[2]));
+	const FTileInfo *CorrespondingTile = GetTileById(TileId);
+	ProtocolArray.RemoveAt(0, 3);
 	
-	const FString TileId = ProtocolArgs[1] + ProtocolArgs[2];
-	ObjectsNumber.Add(EObjectType::Food, FCString::Atoi(*ProtocolArgs[3]));
-	ObjectsNumber.Add(EObjectType::Linemate, FCString::Atoi(*ProtocolArgs[4]));
-	ObjectsNumber.Add(EObjectType::Deraumere, FCString::Atoi(*ProtocolArgs[5]));
-	ObjectsNumber.Add(EObjectType::Sibur, FCString::Atoi(*ProtocolArgs[6]));
-	ObjectsNumber.Add(EObjectType::Mendiane, FCString::Atoi(*ProtocolArgs[7]));
-	ObjectsNumber.Add(EObjectType::Phiras, FCString::Atoi(*ProtocolArgs[8]));
-	ObjectsNumber.Add(EObjectType::Thystame, FCString::Atoi(*ProtocolArgs[9]));
-	for (FTileInfo TileInfo: TileMap)
+	if (!AreArraysEqual(ProtocolArray, CorrespondingTile->TileComponent->OldProtocol))
 	{
-		if (TileInfo.TileID == TileId)
+		CorrespondingTile->TileComponent->OldProtocol = ProtocolArray;
+		for (int32 CrystalIndex = 0; CrystalIndex < ProtocolArray.Num(); CrystalIndex++)
 		{
-			TileInfo.TileComponent->PlaceObjectList(ObjectsNumber);
+			for (int32 Index = 0; Index < FCString::Atoi(*ProtocolArray[CrystalIndex]); Index++)
+			{
+				CorrespondingTile->TileComponent->PlaceObjectByType(CrystalIndex);
+			}
 		}
 	}
 }
 
 void AGameMap::SetEggOnMap(const TArray<FString> &ProtocolArray)
 {
-	const FString TileId = ProtocolArray[3] + ProtocolArray[4];
+	int32 TileId = FCString::Atoi(*(ProtocolArray[3] + ProtocolArray[4]));
 	for (FTileInfo TileInfo: TileMap)
 	{
 		if (TileInfo.TileID == TileId)
@@ -99,6 +110,29 @@ void AGameMap::DestroyEggById(const int32 EggId)
 			TileInfo.TileComponent->DestroyEgg(EggId);
 		}
 	}
+}
+
+void AGameMap::SpawnCharacter(const TArray<FString>& ProtocolArray)
+{
+	int32 TileId = FCString::Atoi(*(ProtocolArray[2] + ProtocolArray[3]));
+	FVector Location;
+	FActorSpawnParameters SpawnParams;
+	SpawnParams.Owner = this;
+	
+	for (FTileInfo TileInfo: TileMap)
+	{
+		if (TileInfo.TileID == TileId && TileInfo.TileComponent->IsEggInArray())
+		{
+			UE_LOG(LogTemp, Warning, TEXT("Find Tile With Egg To destroy: %d"), TileId);
+			DestroyEggById(TileInfo.TileComponent->GetTileEggInfos()[0].EggId);
+			Location = TileInfo.TileComponent->GetTileLocation();
+		}
+	}
+	AGameCharacter *NewCharacter = GetWorld()->SpawnActor<AGameCharacter>(AGameCharacter::StaticClass(), Location, FRotator::ZeroRotator, SpawnParams);
+	FCharacterInfo NewCharacterInfo;
+	NewCharacterInfo.Character = NewCharacter;
+	NewCharacterInfo.CharacterId = ProtocolArray[1];
+	CharacterArray.Add(NewCharacterInfo);
 }
 
 void AGameMap::InitMap(const int32 SizeXParam, const int32 SizeYParam)
@@ -120,4 +154,3 @@ void AGameMap::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 
 }
-

@@ -8,14 +8,25 @@ AGameCharacter::AGameCharacter()
 {
  	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
+	SkeletonMesh = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("Charactere mesh"));
+	SkeletonMesh->SetupAttachment(RootComponent);
 
+	static ConstructorHelpers::FObjectFinder<USkeletalMesh> SkeletalMeshAsset(TEXT("/Game/Imported/TileObject/Barbarian_Skeleton.Barbarian_Skeleton"));
+	if (SkeletalMeshAsset.Succeeded())
+	{
+		SkeletonMesh->SetSkeletalMesh(SkeletalMeshAsset.Object);
+	}
 }
 
 // Called when the game starts or when spawned
 void AGameCharacter::BeginPlay()
 {
 	Super::BeginPlay();
-	check(GEngine != nullptr);
+	UMaterialInterface* Material = LoadObject<UMaterialInterface>(nullptr, TEXT("/Game/Imported/TileObject/Barbarian_PhysicsAsset.Barbarian_PhysicsAsset"));
+	if (Material)
+	{
+		SkeletonMesh->SetMaterial(0, Material);
+	}
 	
 }
 

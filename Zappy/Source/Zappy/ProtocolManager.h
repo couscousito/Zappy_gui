@@ -38,7 +38,6 @@ private:
 private:
 	TArray<FString> TeamNameArray;
 	int32 TimeUnit;
-	
 	/* -- Server Command -- */
 private:
 	TMap<FString, TFunction<void(const FString&)>> CommandMap;

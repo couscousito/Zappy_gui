@@ -18,14 +18,14 @@ ATileComponent::ATileComponent()
 	}
 }
 
-void ATileComponent::PlaceObject(const FString PathToObject, FVector Location, FRotator Rotation)
+UStaticMeshComponent* ATileComponent::PlaceObject(const FString& PathToObject, FVector Location, FRotator Rotation)
 {
 	UStaticMesh* MeshToPlace = LoadObject<UStaticMesh>(nullptr, *PathToObject);
 	;
 	if (!MeshToPlace)
 	{
 		UE_LOG(LogTemp, Warning, TEXT("PathToObject: Object path is invalid."));
-		return;
+		return nullptr;
 	}
 	
 	float TargetXY = 40.0f;
@@ -43,57 +43,33 @@ void ATileComponent::PlaceObject(const FString PathToObject, FVector Location, F
 		NewMeshComponent->SetWorldScale3D(ScaleFactor);
 		NewMeshComponent->RegisterComponent();
 		NewMeshComponent->AttachToComponent(RootComponent, FAttachmentTransformRules::KeepWorldTransform);
+		return NewMeshComponent;
 	}
+	return nullptr;
 }
 
-bool ATileComponent::AreTMapIdentical(const TMap<EObjectType, int32>& Map1, const TMap<EObjectType, int32>& Map2)
+void ATileComponent::PlaceObjectByType(int32 ObjectId)
 {
-	if (Map1.Num() != Map2.Num())
-	{
-		return false;
-	}
-
-	for (const auto& Pair : Map1)
-	{
-		const int32* ValueInMap2 = Map2.Find(Pair.Key);
-		if (!ValueInMap2 || *ValueInMap2 != Pair.Value)
-		{
-			return false;
-		}
-	}
-	return true;
-}
-
-void ATileComponent::PlaceObjectList(TMap<EObjectType, int32> ObjectList)
-{
-	if (AreTMapIdentical(ObjectList, ObjectOnTile))
-	{
-		return;
-	}
-	ObjectOnTile = ObjectList;
-	for (auto El: ObjectList)
-	{
-		for (int32 i = 0; i < El.Value; i++)
-		{
-			FVector Location(FMath::RandRange(0.0f, 400.0f), FMath::RandRange(0.0f, 400.0f), 0.0f);
-			FRotator Rotation = FRotator::ZeroRotator;
-			PlaceObject(PathManager->GetAssetPath(El.Key), Location, Rotation);
-		}
-	}
+	FObjectInfo ObjectInfo;
+	FVector Location(FMath::RandRange(0.0f, 400.0f), FMath::RandRange(0.0f, 400.0f), 0.0f);
+	FRotator Rotation = FRotator::ZeroRotator;
+	
+	ObjectInfo.ObjectType = static_cast<EObjectType>(ObjectId);
+	ObjectInfo.ObjectId = ObjectId;
+	ObjectInfo.ObjectMesh = PlaceObject(PathManager->GetAssetPath(static_cast<EObjectType>(ObjectId)), Location, Rotation);
+	ObjectOnTile.Add(ObjectInfo);
 }
 
 void ATileComponent::PlaceEgg(int32 EggId, int32 PlayerId, int32 PosX, int32 PosY)
 {	
 	FEggInfo NewEgg;
-	NewEgg.EggId = EggId;
-	NewEgg.PlayerID = PlayerId;
-	NewEgg.Coordinate.X = PosX;
-	NewEgg.Coordinate.Y = PosY;
-	
-	EggOnTile.Add(NewEgg);
 	FVector Location(FMath::RandRange(0.0f, 400.0f), FMath::RandRange(0.0f, 400.0f), 0.0f);
 	FRotator Rotation = FRotator::ZeroRotator;
-	PlaceObject(PathManager->GetAssetPath(EObjectType::Egg), Location, Rotation);
+	
+	NewEgg.EggId = EggId;
+	NewEgg.PlayerID = PlayerId;
+	NewEgg.EggMesh = PlaceObject(PathManager->GetAssetPath(EObjectType::Egg), Location, Rotation);
+	EggOnTile.Add(NewEgg);
 }
 
 TArray<FEggInfo> ATileComponent::GetTileEggInfos()
@@ -101,14 +77,34 @@ TArray<FEggInfo> ATileComponent::GetTileEggInfos()
 	return EggOnTile;
 }
 
+FEggInfo *ATileComponent::GetEggInfoById(const int32 EggId)
+{
+	FEggInfo* FoundEgg = EggOnTile.FindByPredicate([EggId](const FEggInfo& Tile)
+	{
+		return Tile.EggId == EggId;
+	});
+	return FoundEgg;
+}
+
 void ATileComponent::DestroyEgg(const int32 EggId)
 {
-	if (EggOnTile.Num() > 0)
+	UE_LOG(LogTemp, Warning, TEXT("Destroy Egg func"));
+	for (int32 Index = 0; Index < EggOnTile.Num(); ++Index)
 	{
-		int32 NumRemoved = EggOnTile.RemoveAll([EggId](const FEggInfo& EggInfo) {
-			return EggInfo.EggId == EggId;
-		});
+		if (EggOnTile[Index].EggId == EggId)
+		{
+			if (EggOnTile[Index].EggMesh != nullptr)
+			{
+				UE_LOG(LogTemp, Warning, TEXT("Destroy Egg succesfully"));
+				EggOnTile[Index].EggMesh->DestroyComponent();
+				EggOnTile[Index].EggMesh = nullptr; // Optionnel : éviter les références futures invalides
+			}
+
+			EggOnTile.RemoveAt(Index);
+			return;
+		}
 	}
+
 }
 
 bool ATileComponent::IsEggInArray(int32 EggIdToFind)
@@ -122,11 +118,22 @@ bool ATileComponent::IsEggInArray(int32 EggIdToFind)
 	return FoundEgg != nullptr;
 }
 
+bool ATileComponent::IsEggInArray()
+{
+	return EggOnTile.Num() != 0;
+}
+
 
 void ATileComponent::SetTileLocation(const FVector Location)
 {
 	TileLocation = Location;
 }
+
+FVector ATileComponent::GetTileLocation()
+{
+	return TileLocation;
+}
+
 
 // Called when the game starts or when spawned
 void ATileComponent::BeginPlay()

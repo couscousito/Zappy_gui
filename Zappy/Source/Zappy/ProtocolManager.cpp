@@ -19,6 +19,7 @@ void AProtocolManager::InitCommandMap()
 	CommandMap.Add(TEXT("edi"), [this](const FString &Params) { LaunchEdi(Params); });
 	CommandMap.Add(TEXT("tna"), [this](const FString &Params) { LaunchTna(Params); });
 	CommandMap.Add(TEXT("sgt"), [this](const FString &Params) { LaunchSgt(Params); });
+	CommandMap.Add(TEXT("pnw"), [this](const FString &Params) { LaunchPnw(Params); });
 }
 
 void AProtocolManager::InitGameClass()
@@ -58,7 +59,6 @@ void AProtocolManager::ParseCommand(const FString &Command)
 				UE_LOG(LogTemp, Warning, TEXT("Error: Unknown Command: %s"), *it);
 			}
 		}
-		// UE_LOG(LogTemp, Warning, TEXT("Data receive by server: %s"), *Command);
 	}
 }
 
@@ -67,7 +67,6 @@ void AProtocolManager::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 	FString DataReceive = NetworkManagement->ReceiveData();
-	// UE_LOG(LogTemp, Warning, TEXT("Data from server: %s"), *DataReceive);
 	ParseCommand(DataReceive);
 }
 
@@ -75,7 +74,6 @@ void AProtocolManager::Tick(float DeltaTime)
 
 void AProtocolManager::LaunchMsz(const FString& Command)
 {
-	UE_LOG(LogTemp, Warning, TEXT("Enter in commandMap msz"));
 	TArray<FString> SeparateCommand;
 	Command.ParseIntoArray(SeparateCommand, TEXT(" "), true);
 	
@@ -88,11 +86,14 @@ void AProtocolManager::LaunchMsz(const FString& Command)
 
 void AProtocolManager::LaunchBct(const FString& Command)
 {
-	GameMap->SetObjectOnMapByProtocol(Command);
+	TArray<FString> SeparateCommand;
+	Command.ParseIntoArray(SeparateCommand, TEXT(" "), true);
+	GameMap->SetObjectOnMapByProtocol(SeparateCommand);
 }
 
 void AProtocolManager::LaunchEnw(const FString& Command)
 {
+	UE_LOG(LogTemp, Warning, TEXT("ENW Egg to place : %s"), *Command);
 	TArray<FString> SeparateCommand;
 	Command.ParseIntoArray(SeparateCommand, TEXT(" "), true);
 	GameMap->SetEggOnMap(SeparateCommand);
@@ -124,7 +125,10 @@ void AProtocolManager::LaunchSgt(const FString& Command)
 
 void AProtocolManager::LaunchPnw(const FString& Command)
 {
+	UE_LOG(LogTemp, Warning, TEXT("PWN place charactere : %s"), *Command);
 	TArray<FString> SeparateCommand;
 	Command.ParseIntoArray(SeparateCommand, TEXT(" "), true);
+
+	GameMap->SpawnCharacter(SeparateCommand);
 }
 

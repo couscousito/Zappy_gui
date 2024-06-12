@@ -61,10 +61,8 @@ FString UNetworkManagement::ReceiveData() const
 
 		int32 Read = 0;
 		Socket->Recv(ReceivedData.GetData(), ReceivedData.Num(), Read);
-		UE_LOG(LogTemp, Warning, TEXT("Data received!"));
 
 		ReceivedString += FString(ANSI_TO_TCHAR(reinterpret_cast<const char*>(ReceivedData.GetData())));
-		// UE_LOG(LogTemp, Warning, TEXT("Received String: %s"), *ReceivedString);
 	}
 	return ReceivedString;
 }

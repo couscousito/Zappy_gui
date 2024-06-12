@@ -19,9 +19,21 @@ struct FEggInfo
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	int32 PlayerID;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	FVector2D Coordinate;
+	UStaticMeshComponent *EggMesh;
 };
 
+USTRUCT(BlueprintType)
+struct FObjectInfo
+{
+	GENERATED_BODY()
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	EObjectType ObjectType;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	int32 ObjectId;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UStaticMeshComponent *ObjectMesh;
+};
 
 UCLASS()
 class ZAPPY_API ATileComponent : public AActor
@@ -39,22 +51,27 @@ protected:
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
-	void PlaceObject(const FString PathToObject, FVector Location, FRotator Rotation);
-	void PlaceObjectList(TMap<EObjectType, int32> ObjectList);
+	UStaticMeshComponent* PlaceObject(const FString& PathToObject, FVector Location, FRotator Rotation);
+	void PlaceObjectByType(int32 ObjectId);
 	void SetTileLocation(const FVector Location);
+	FVector GetTileLocation();
 	
 	// Egg Operation
 	void PlaceEgg(int32 EggId, int32 PlayerId, int32 posX, int32 posY);
 	void DestroyEgg(const int32 EggId);
 	bool IsEggInArray(int32 EggIdToFind);
+	bool IsEggInArray();
 	TArray<FEggInfo> GetTileEggInfos();
+	FEggInfo *GetEggInfoById(const int32 EggId);
 	
 	UStaticMeshComponent* TileMesh;
+	/*same map object verification*/
+	TArray<FString> OldProtocol;
 private:
-	bool AreTMapIdentical(const TMap<EObjectType, int32>& Map1, const TMap<EObjectType, int32>& Map2);
+	
 	FVector TileLocation;
 	UPROPERTY()
 	UObjectPathManager* PathManager;
-	TMap<EObjectType, int32> ObjectOnTile;
+	TArray<FObjectInfo> ObjectOnTile;
 	TArray<FEggInfo> EggOnTile;
 };
