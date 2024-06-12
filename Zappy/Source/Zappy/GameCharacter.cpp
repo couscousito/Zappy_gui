@@ -11,23 +11,30 @@ AGameCharacter::AGameCharacter()
 	SkeletonMesh = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("Charactere mesh"));
 	SkeletonMesh->SetupAttachment(RootComponent);
 
-	static ConstructorHelpers::FObjectFinder<USkeletalMesh> SkeletalMeshAsset(TEXT("/Game/Imported/TileObject/Barbarian_Skeleton.Barbarian_Skeleton"));
-	if (SkeletalMeshAsset.Succeeded())
-	{
-		SkeletonMesh->SetSkeletalMesh(SkeletalMeshAsset.Object);
-	}
+	// static ConstructorHelpers::FObjectFinder<USkeletalMesh> SkeletalMeshAsset(TEXT("/Game/Imported/TileObject/Walking.Walking"));
+	// if (SkeletalMeshAsset.Succeeded())
+	// {
+	// 	UE_LOG(LogTemp, Warning, TEXT("skeleton created"));
+	// 	SkeletonMesh->SetSkeletalMesh(SkeletalMeshAsset.Object);
+	// }
+	// static ConstructorHelpers::FObjectFinder<UMaterialInterface> MaterialAsset(TEXT("/Game/Imported/TileObject/Walking_PhysicsAsset.Walking_PhysicsAsset"));
+	// if (MaterialAsset.Succeeded())
+	// {
+	// 	UE_LOG(LogTemp, Warning, TEXT("mesh created"));
+	// 	CharacterMaterial = MaterialAsset.Object;
+	// }
 }
 
 // Called when the game starts or when spawned
 void AGameCharacter::BeginPlay()
 {
 	Super::BeginPlay();
-	UMaterialInterface* Material = LoadObject<UMaterialInterface>(nullptr, TEXT("/Game/Imported/TileObject/Barbarian_PhysicsAsset.Barbarian_PhysicsAsset"));
-	if (Material)
-	{
-		SkeletonMesh->SetMaterial(0, Material);
-	}
 	
+	if (CharacterMaterial)
+	{
+		UMaterialInstanceDynamic* DynamicMaterial = UMaterialInstanceDynamic::Create(CharacterMaterial, this);
+		GetMesh()->SetMaterial(0, DynamicMaterial);
+	}
 }
 
 // Called every frame

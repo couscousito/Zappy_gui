@@ -125,7 +125,6 @@ void AProtocolManager::LaunchSgt(const FString& Command)
 
 void AProtocolManager::LaunchPnw(const FString& Command)
 {
-	UE_LOG(LogTemp, Warning, TEXT("PWN place charactere : %s"), *Command);
 	TArray<FString> SeparateCommand;
 	Command.ParseIntoArray(SeparateCommand, TEXT(" "), true);
 

@@ -123,9 +123,8 @@ void AGameMap::SpawnCharacter(const TArray<FString>& ProtocolArray)
 	{
 		if (TileInfo.TileID == TileId && TileInfo.TileComponent->IsEggInArray())
 		{
-			UE_LOG(LogTemp, Warning, TEXT("Find Tile With Egg To destroy: %d"), TileId);
 			DestroyEggById(TileInfo.TileComponent->GetTileEggInfos()[0].EggId);
-			Location = TileInfo.TileComponent->GetTileLocation();
+			Location = TileInfo.TileComponent->GetTileLocation() + 100.0f;
 		}
 	}
 	AGameCharacter *NewCharacter = GetWorld()->SpawnActor<AGameCharacter>(AGameCharacter::StaticClass(), Location, FRotator::ZeroRotator, SpawnParams);

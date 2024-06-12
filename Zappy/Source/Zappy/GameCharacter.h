@@ -29,5 +29,6 @@ public:
 private:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Mesh", meta = (AllowPrivateAccess = "true"))
 	class USkeletalMeshComponent* SkeletonMesh;
-
+	UPROPERTY(EditDefaultsOnly, Category = "Materials")
+	class UMaterialInterface* CharacterMaterial;
 };

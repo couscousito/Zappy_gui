@@ -7,14 +7,14 @@
 
 UObjectPathManager::UObjectPathManager()
 {
-	ObjectPaths.Add(EObjectType::Food, TEXT("/Game/Imported/TileObject/wholerHam.wholerHam"));
-	ObjectPaths.Add(EObjectType::Linemate, TEXT("/Game/Imported/TileObject/Linemate.Linemate"));
-	ObjectPaths.Add(EObjectType::Deraumere, TEXT("/Game/Imported/TileObject/Deraumere.Deraumere"));
-	ObjectPaths.Add(EObjectType::Sibur, TEXT("/Game/Imported/TileObject/Sibur.Sibur"));
-	ObjectPaths.Add(EObjectType::Mendiane, TEXT("/Game/Imported/TileObject/Mendiane.Mendiane"));
-	ObjectPaths.Add(EObjectType::Phiras, TEXT("/Game/Imported/TileObject/Phiras.Phiras"));
-	ObjectPaths.Add(EObjectType::Thystame, TEXT("/Game/Imported/TileObject/Thystame.Thystame"));
-	ObjectPaths.Add(EObjectType::Egg, TEXT("/Game/Imported/TileObject/egg.egg"));
+	ObjectPaths.Add(EObjectType::Food, TEXT("/Game/Imported/Food/SM_Food.SM_Food"));
+	ObjectPaths.Add(EObjectType::Linemate, TEXT("/Game/Imported/Crystals/Linemate/SM_Linemate.SM_Linemate"));
+	ObjectPaths.Add(EObjectType::Deraumere, TEXT("/Game/Imported/Crystals/Deraumere/SM_deraumere.SM_Deraumere"));
+	ObjectPaths.Add(EObjectType::Sibur, TEXT("/Game/Imported/Crystals/Sibur/SM_Sibur.SM_Sibur"));
+	ObjectPaths.Add(EObjectType::Mendiane, TEXT("/Game/Imported/Crystals/Mendiane/SM_Mendiane.SM_Mendiane"));
+	ObjectPaths.Add(EObjectType::Phiras, TEXT("/Game/Imported/Crystals/Phiras/SM_Phiras.SM_Phiras"));
+	ObjectPaths.Add(EObjectType::Thystame, TEXT("/Game/Imported/Crystals/Thystame/SM_Thystame.SM_Thystame"));
+	ObjectPaths.Add(EObjectType::Egg, TEXT("/Game/Imported/Egg/SM_Egg.SM_Egg"));
 }
 
 FString UObjectPathManager::GetAssetPath(EObjectType ObjectType) const
